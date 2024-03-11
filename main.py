@@ -5,7 +5,7 @@ import random
 from dotenv import load_dotenv
 
 
-def download_xkcd_comic(comic_url):
+def download_random_xkcd_comic(comic_url):
     response = requests.get(comic_url)
     response.raise_for_status()
     last_comic_number = response.json()['num']
@@ -27,14 +27,17 @@ def send_picture(image, chat_id, bot):
             chat_id=chat_id,
             document=file
         )
-    os.remove(image)
 
 
 if __name__ == "__main__":
     comic_url = "https://xkcd.com/info.0.json"
-    download_xkcd_comic(comic_url)
+    download_random_xkcd_comic(comic_url)
     load_dotenv()
     tg_token = os.environ['TELEGRAM_TOKEN']
     bot = telegram.Bot(token=tg_token)
     chat_id = os.environ["TELEGRAM_CHAT_ID"]
-    send_picture('test.png', chat_id, bot)
+    try:
+        send_picture('test.png', chat_id, bot)
+    finally:
+        if os.path.exists('test.png'):
+            os.remove('test.png')
